@@ -5,6 +5,9 @@ from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTyp
 GROQ_API_KEY = os.environ["GROQ_API_KEY"]
 TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 
+# Kill all other instances
+requests.get(f"https://api.telegram.org/bot{TOKEN}/deleteWebhook?drop_pending_updates=true")
+
 async def handle(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     msg = update.message.text
     try:
@@ -24,4 +27,4 @@ async def handle(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(MessageHandler(filters.TEXT, handle))
-app.run_polling()
+app.run_polling(drop_pending_updates=True, close_loop=False)
