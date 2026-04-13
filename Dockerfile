@@ -4,5 +4,5 @@ RUN curl -fsSL https://github.com/block/goose/releases/latest/download/goose-x86
 RUN pip3 install python-telegram-bot requests --break-system-packages
 COPY config.yaml /root/.config/goose/config.yaml
 COPY bot.py .
-EXPOSE 3000
-CMD bash -c "goose server --port 3000 --host 0.0.0.0 & python3 bot.py"
+EXPOSE 10000
+CMD bash -c "goose serve --port 3000 --host 0.0.0.0 & sleep 5 && python3 bot.py"
