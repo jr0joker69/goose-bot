@@ -160,6 +160,7 @@ app.add_handler(CommandHandler("run", run))
 app.add_handler(MessageHandler(filters.TEXT, handle))
 
 if RENDER_URL:
-    app.run_webhook(listen="0.0.0.0", port=PORT, webhook_url=f"{RENDER_URL}/webhook")
+    
 else:
     app.run_polling(drop_pending_updates=True)
+app.run_webhook(listen="0.0.0.0", port=PORT, url_path="/webhook", webhook_url=f"{RENDER_URL}/webhook")
