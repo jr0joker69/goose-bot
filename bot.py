@@ -1,12 +1,11 @@
 import os, requests
 from telegram import Update
-from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
+from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes, WebhookInfo
 
 GROQ_API_KEY = os.environ["GROQ_API_KEY"]
 TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
-
-# Kill all other instances
-requests.get(f"https://api.telegram.org/bot{TOKEN}/deleteWebhook?drop_pending_updates=true")
+RENDER_URL = os.environ["RENDER_URL"]  # e.g. https://goose-bot.onrender.com
+PORT = int(os.environ.get("PORT", 10000))
 
 async def handle(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     msg = update.message.text
@@ -27,4 +26,8 @@ async def handle(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(MessageHandler(filters.TEXT, handle))
-app.run_polling(drop_pending_updates=True, close_loop=False)
+app.run_webhook(
+    listen="0.0.0.0",
+    port=PORT,
+    webhook_url=f"{RENDER_URL}/webhook"
+)
