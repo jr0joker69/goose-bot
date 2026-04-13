@@ -2,25 +2,22 @@ import os, requests
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 
-GOOSE_URL = "http://localhost:3000"
+GROQ_API_KEY = os.environ["GROQ_API_KEY"]
 TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 
 async def handle(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     msg = update.message.text
     try:
         r = requests.post(
-            f"{GOOSE_URL}/api/v1/reply",
-            json={"messages": [{"role": "user", "content": msg}]},
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={"Authorization": f"Bearer {GROQ_API_KEY}"},
+            json={
+                "model": "llama-3.3-70b-versatile",
+                "messages": [{"role": "user", "content": msg}]
+            },
             timeout=60
         )
-        data = r.json()
-        # try multiple possible response keys
-        reply = (
-            data.get("content") or
-            data.get("response") or
-            data.get("message") or
-            str(data)
-        )
+        reply = r.json()["choices"][0]["message"]["content"]
     except Exception as e:
         reply = f"Error: {e}"
     await update.message.reply_text(reply)

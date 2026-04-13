@@ -1,8 +1,4 @@
-FROM debian:bookworm-slim
-RUN apt-get update && apt-get install -y curl ca-certificates libssl3 python3 python3-pip && rm -rf /var/lib/apt/lists/*
-RUN curl -fsSL https://github.com/block/goose/releases/latest/download/goose-x86_64-unknown-linux-gnu.tar.gz | tar -xz -C /usr/local/bin/ && chmod +x /usr/local/bin/goose
-RUN pip3 install python-telegram-bot requests --break-system-packages
-COPY config.yaml /root/.config/goose/config.yaml
+FROM python:3.11-slim
+RUN pip install python-telegram-bot requests
 COPY bot.py .
-EXPOSE 10000
-CMD bash -c "goose serve --port 3000 --host 0.0.0.0 & sleep 5 && python3 bot.py"
+CMD ["python3", "bot.py"]
